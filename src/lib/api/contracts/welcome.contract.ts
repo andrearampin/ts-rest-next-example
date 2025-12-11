@@ -4,7 +4,7 @@ import { z } from "zod";
 const c = initContract();
 
 export const welcomeContract = c.router({
-  welcome: {
+  create: {
     method: "POST",
     path: "/api/welcome",
     body: z.object({

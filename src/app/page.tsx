@@ -12,7 +12,7 @@ export default function Home() {
   const {
     mutate: submitWelcome,
     isPending,
-  } = apiClient.welcome.useMutation({
+  } = apiClient.welcome.create.useMutation({
     onSuccess: (response) => {
       setErrorMessage(null);
       setWelcomeMessage(response.body.message);
