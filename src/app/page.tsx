@@ -2,12 +2,32 @@
 
 import { useState } from 'react';
 import Button from '@/components/Button';
+import { apiClient } from '@/lib/api-client';
 
 export default function Home() {
   const [name, setName] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = () => {
-    console.log(name);
+  const handleSubmit = async () => {
+    const trimmedName = name.trim();
+    if (!trimmedName) return;
+    
+    setLoading(true);
+    try {
+      const response = await apiClient.welcome({
+        body: {
+          name: trimmedName,
+        },
+      });
+      
+      if (response.status === 200) {
+        console.log(response.body);
+      }
+    } catch (error) {
+      console.error('Error calling welcome API:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -25,7 +45,7 @@ export default function Home() {
               placeholder="Enter your name"
               className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
             />
-            <Button onClick={handleSubmit}>
+            <Button onClick={handleSubmit} loading={loading}>
               Submit
             </Button>
           </div>
