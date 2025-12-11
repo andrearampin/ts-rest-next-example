@@ -9,10 +9,7 @@ export default function Home() {
   const [welcomeMessage, setWelcomeMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const {
-    mutate: submitWelcome,
-    isPending,
-  } = apiClient.welcome.create.useMutation({
+  const { mutate: submitWelcome, isPending } = apiClient.welcome.create.useMutation({
     onSuccess: (response) => {
       setErrorMessage(null);
       setWelcomeMessage(response.body.message);
@@ -27,7 +24,7 @@ export default function Home() {
   const handleSubmit = () => {
     const trimmedName = name.trim();
     if (!trimmedName) return;
-    
+
     submitWelcome({
       body: {
         name: trimmedName,
@@ -46,9 +43,7 @@ export default function Home() {
           )}
           {errorMessage && (
             <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded-md">
-              <p className="text-red-800 dark:text-red-200 text-sm">
-                {errorMessage}
-              </p>
+              <p className="text-red-800 dark:text-red-200 text-sm">{errorMessage}</p>
             </div>
           )}
           <div className="flex flex-col gap-4">

@@ -1,6 +1,9 @@
 'use client';
 
-import { QueryClient, QueryClientProvider as TanstackQueryClientProvider } from '@tanstack/react-query';
+import {
+  QueryClient,
+  QueryClientProvider as TanstackQueryClientProvider,
+} from '@tanstack/react-query';
 import { useState } from 'react';
 import { apiClient } from '@/lib/api/client';
 
@@ -13,7 +16,7 @@ export function QueryClientProvider({ children }: { children: React.ReactNode })
             staleTime: 60 * 1000, // 1 minute
           },
         },
-      })
+      }),
   );
 
   return (
