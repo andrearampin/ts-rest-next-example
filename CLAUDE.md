@@ -44,7 +44,7 @@ pnpm test:run
 pnpm test:coverage
 
 # Run a specific test file
-pnpm test src/components/Button.test.tsx
+pnpm test <path-to-test-file>
 ```
 
 ## Architecture
@@ -53,7 +53,13 @@ pnpm test src/components/Button.test.tsx
 - **src/app/**: Next.js App Router pages and layouts
   - Uses file-based routing with the App Router
   - Server Components by default (use 'use client' directive for client components)
+  - API routes are defined in `app/api/` subdirectories
 - **src/components/**: Reusable React components
+  - Client and server components as needed
+  - Test files placed alongside components
+- **src/lib/**: Shared utilities and libraries
+  - **contracts/**: API contract definitions for type-safe client-server communication
+  - **api-client.ts**: Initialized API client for making type-safe requests
 - **src/test/**: Test setup and utilities
 - **public/**: Static assets
 
@@ -115,7 +121,7 @@ This project uses Tailwind CSS v4, which has significant changes from v3:
 
 **Running Specific Tests:**
 ```bash
-vitest run src/components/Button.test.tsx
+vitest run <path-to-test-file>
 ```
 
 ### TypeScript Configuration
@@ -130,6 +136,37 @@ vitest run src/components/Button.test.tsx
 - Uses ESLint Flat Config format (`eslint.config.mjs`)
 - Extends `eslint-config-next/core-web-vitals` and `eslint-config-next/typescript`
 - Automatic linting for Next.js best practices
+
+### API Architecture
+
+This project uses a contract-based API architecture for type-safe client-server communication:
+
+**Contract Pattern:**
+- API contracts are defined in `src/lib/contracts/` using ts-rest
+- Contracts define request/response types, methods, and paths
+- Type safety is enforced at compile time between client and server
+
+**API Client:**
+- Initialized in `src/lib/api-client.ts` using React Query integration
+- Provides type-safe hooks for making API requests
+- Handles data fetching, caching, and state management automatically
+
+**API Routes:**
+- API route handlers are defined in `src/app/api/` using Next.js App Router
+- Handlers use `createNextHandler` from `@ts-rest/serverless/next` to match contracts
+- Ensures server implementation matches contract definitions
+
+### React Query Integration
+
+**Provider Setup:**
+- React Query is configured in `src/components/providers.tsx`
+- Wraps the application in the root layout
+- Provides query client with default options for caching and stale time
+
+**Usage Pattern:**
+- Use `apiClient` hooks (e.g., `useMutation`, `useQuery`) for data operations
+- Hooks are automatically typed based on contract definitions
+- Handles loading states, errors, and caching automatically
 
 ## Key Configuration Files
 
@@ -171,14 +208,20 @@ vitest run src/components/Button.test.tsx
 ## Common Development Tasks
 
 ### Adding a New Component
-1. Create component in `src/components/ComponentName.tsx`
-2. Create test file `src/components/ComponentName.test.tsx`
-3. Import and use in pages or other components using `@/components/ComponentName`
+1. Create component file in `src/components/`
+2. Create corresponding test file alongside the component
+3. Import and use in pages or other components using the `@/components/` path alias
 
 ### Adding a New Page
-1. Create file in `src/app/` following file-based routing
-2. Use Server Components by default
-3. Add `'use client'` if component needs interactivity
+1. Create file in `src/app/` following Next.js file-based routing conventions
+2. Use Server Components by default for optimal performance
+3. Add `'use client'` directive if component needs client-side interactivity
+
+### Adding a New API Endpoint
+1. Define the contract in `src/lib/contracts/` using ts-rest contract definitions
+2. Add the contract to the main API contract router
+3. Create the route handler in `src/app/api/` using `createNextHandler`
+4. Use `apiClient` hooks in components for type-safe client requests
 
 ### Customizing Tailwind Theme
 1. Edit `src/app/globals.css`
