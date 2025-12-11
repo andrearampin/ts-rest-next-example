@@ -1,17 +1,21 @@
+import Spinner from './Spinner';
+
 interface ButtonProps {
   children: React.ReactNode;
   onClick?: () => void;
   variant?: 'primary' | 'secondary';
   disabled?: boolean;
+  loading?: boolean;
 }
 
 export default function Button({
   children,
   onClick,
   variant = 'primary',
-  disabled = false
+  disabled = false,
+  loading = false
 }: ButtonProps) {
-  const baseStyles = 'px-4 py-2 rounded font-medium transition-colors duration-200';
+  const baseStyles = 'px-4 py-2 rounded font-medium transition-colors duration-200 flex items-center justify-center gap-2';
 
   const variantStyles = {
     primary: 'bg-blue-600 hover:bg-blue-700 text-white disabled:bg-blue-300',
@@ -21,9 +25,10 @@ export default function Button({
   return (
     <button
       onClick={onClick}
-      disabled={disabled}
+      disabled={disabled || loading}
       className={`${baseStyles} ${variantStyles[variant]}`}
     >
+      {loading && <Spinner size="sm" />}
       {children}
     </button>
   );
