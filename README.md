@@ -1,4 +1,4 @@
-# Canva
+# TS-Rest Next Example
 
 A modern Next.js web application built with TypeScript, featuring type-safe API contracts, server-side rendering, and a comprehensive testing setup.
 
@@ -106,10 +106,16 @@ pnpm lint
 ```
 src/
 ├── app/              # Next.js App Router pages and layouts
-├── components/       # Reusable React components
-├── lib/              # Shared utilities and API client
-│   ├── contracts/    # API contract definitions
-│   └── api-client.ts # API client initialization
+│   └── api/          # API catch-all handler
+├── ui/               # UI layer
+│   ├── components/   # Reusable React components
+│   └── providers/    # React context providers
+├── lib/              # Shared utilities
+│   └── api/          # API layer
+│       ├── contract.ts       # Main API contract router
+│       ├── client.ts         # API client initialization
+│       ├── router.ts         # Server-side route router
+│       └── *.route.ts        # Individual route handlers
 └── test/             # Test setup and utilities
 
 public/               # Static assets
@@ -127,8 +133,8 @@ public/               # Static assets
 
 - Components in `src/app/` are Server Components by default
 - Add `'use client'` directive for client-side interactivity
-- API contracts are defined in `src/lib/contracts/` for type-safe communication
-- React Query is configured in the root layout for data fetching
+- API contracts and routes are defined in `src/lib/api/` for type-safe communication
+- React Query is configured in `src/ui/providers/QueryClientProvider.tsx`
 
 ## Learn More
 

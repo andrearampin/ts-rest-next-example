@@ -53,13 +53,17 @@ pnpm test <path-to-test-file>
 - **src/app/**: Next.js App Router pages and layouts
   - Uses file-based routing with the App Router
   - Server Components by default (use 'use client' directive for client components)
-  - API routes are defined in `app/api/` subdirectories
-- **src/components/**: Reusable React components
-  - Client and server components as needed
-  - Test files placed alongside components
+  - API routes are defined in `app/api/[...ts-rest]/route.ts` (catch-all handler)
+- **src/ui/**: UI layer
+  - **components/**: Reusable React components with test files alongside
+  - **providers/**: React context providers (e.g., QueryClientProvider)
 - **src/lib/**: Shared utilities and libraries
-  - **contracts/**: API contract definitions for type-safe client-server communication
-  - **api-client.ts**: Initialized API client for making type-safe requests
+  - **api/**: API layer with contracts, routes, and client
+    - **contract.ts**: Main API contract router
+    - **client.ts**: Initialized API client for type-safe requests
+    - **router.ts**: Server-side router combining all route handlers
+    - **\*.contract.ts**: Individual contract definitions (e.g., welcome.contract.ts)
+    - **\*.route.ts**: Individual route handlers (e.g., welcome.route.ts)
 - **src/test/**: Test setup and utilities
 - **public/**: Static assets
 
@@ -142,26 +146,35 @@ vitest run <path-to-test-file>
 This project uses a contract-based API architecture for type-safe client-server communication:
 
 **Contract Pattern:**
-- API contracts are defined in `src/lib/contracts/` using ts-rest
-- Contracts define request/response types, methods, and paths
-- Type safety is enforced at compile time between client and server
+- API contracts are defined in `src/lib/api/` using ts-rest
+- Each domain has its own contract file (e.g., `welcome.contract.ts`)
+- Contracts are combined in `contract.ts` using `initContract().router()`
+- Uses Zod for request/response validation
+
+**Route Handlers:**
+- Route handlers are defined in `src/lib/api/*.route.ts`
+- Each route file exports a router created with `tsr.router()`
+- All routes are combined in `router.ts`
+- Test files are placed alongside route files (e.g., `welcome.route.test.ts`)
 
 **API Client:**
-- Initialized in `src/lib/api-client.ts` using React Query integration
+- Initialized in `src/lib/api/client.ts` using `initTsrReactQuery`
 - Provides type-safe hooks for making API requests
 - Handles data fetching, caching, and state management automatically
 
-**API Routes:**
-- API route handlers are defined in `src/app/api/` using Next.js App Router
-- Handlers use `createNextHandler` from `@ts-rest/serverless/next` to match contracts
-- Ensures server implementation matches contract definitions
+**Catch-All Handler:**
+- Single catch-all route at `src/app/api/[...ts-rest]/route.ts`
+- Uses `createNextHandler` from `@ts-rest/serverless/next`
+- Handles all HTTP methods (GET, POST, PUT, PATCH, DELETE, OPTIONS)
+- Enables response validation and JSON query support
 
 ### React Query Integration
 
 **Provider Setup:**
-- React Query is configured in `src/components/providers.tsx`
+- React Query is configured in `src/ui/providers/QueryClientProvider.tsx`
 - Wraps the application in the root layout
-- Provides query client with default options for caching and stale time
+- Provides query client with default options (1 minute stale time)
+- Nests `apiClient.ReactQueryProvider` for ts-rest integration
 
 **Usage Pattern:**
 - Use `apiClient` hooks (e.g., `useMutation`, `useQuery`) for data operations
@@ -208,9 +221,9 @@ This project uses a contract-based API architecture for type-safe client-server 
 ## Common Development Tasks
 
 ### Adding a New Component
-1. Create component file in `src/components/`
-2. Create corresponding test file alongside the component
-3. Import and use in pages or other components using the `@/components/` path alias
+1. Create component file in `src/ui/components/`
+2. Create corresponding test file alongside the component (e.g., `Button.test.tsx`)
+3. Import and use in pages or other components using the `@/ui/components/` path alias
 
 ### Adding a New Page
 1. Create file in `src/app/` following Next.js file-based routing conventions
@@ -218,10 +231,12 @@ This project uses a contract-based API architecture for type-safe client-server 
 3. Add `'use client'` directive if component needs client-side interactivity
 
 ### Adding a New API Endpoint
-1. Define the contract in `src/lib/contracts/` using ts-rest contract definitions
-2. Add the contract to the main API contract router
-3. Create the route handler in `src/app/api/` using `createNextHandler`
-4. Use `apiClient` hooks in components for type-safe client requests
+1. Create a contract file in `src/lib/api/` (e.g., `users.contract.ts`) with Zod schemas
+2. Add the contract to the main router in `src/lib/api/contract.ts`
+3. Create a route handler file (e.g., `users.route.ts`) using `tsr.router()`
+4. Add the route handler to `src/lib/api/router.ts`
+5. Create tests alongside the route file (e.g., `users.route.test.ts`)
+6. Use `apiClient` hooks in components for type-safe client requests
 
 ### Customizing Tailwind Theme
 1. Edit `src/app/globals.css`
