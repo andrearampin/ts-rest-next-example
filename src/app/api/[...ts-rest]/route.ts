@@ -1,5 +1,5 @@
-import { apiContract } from '@/lib/api/contracts';
-import { apiRouter } from '@/lib/api/routers';
+import { apiContract } from '@/lib/api/contract';
+import { apiRouter } from '@/lib/api/router';
 import { createNextHandler } from '@ts-rest/serverless/next';
 
 const handler = createNextHandler(

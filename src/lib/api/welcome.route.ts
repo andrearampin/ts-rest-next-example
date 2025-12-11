@@ -1,5 +1,5 @@
 import { tsr } from "@ts-rest/serverless/next";
-import { apiContract } from "@/lib/api/contracts";
+import { apiContract } from "@/lib/api/contract";
 
 export const createHandler = async ({ body }: { body: { name: string } }) => {
   return {

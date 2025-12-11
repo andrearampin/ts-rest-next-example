@@ -1,5 +1,5 @@
 import { tsr } from "@ts-rest/serverless/next";
-import { apiContract } from "@/lib/api/contracts";
+import { apiContract } from "./contract";
 
 import { welcomeRouter } from "./welcome.route";
 
