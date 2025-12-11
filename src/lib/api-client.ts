@@ -1,7 +1,7 @@
-import { initQueryClient } from "@ts-rest/react-query";
+import { initTsrReactQuery } from "@ts-rest/react-query/v5";
 import { apiContract } from "./contracts";
 
-export const apiClient = initQueryClient(apiContract, {
+export const apiClient = initTsrReactQuery(apiContract, {
   baseUrl: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000",
   baseHeaders: {
     "Content-Type": "application/json",

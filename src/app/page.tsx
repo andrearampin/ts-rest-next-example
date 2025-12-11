@@ -3,19 +3,50 @@
 import { useState } from 'react';
 import Button from '@/components/Button';
 import { apiClient } from '@/lib/api-client';
+import {
+  isFetchError,
+  isUnknownErrorResponse,
+  exhaustiveGuard,
+} from '@ts-rest/react-query/v5';
 
 export default function Home() {
   const [name, setName] = useState('');
   const [welcomeMessage, setWelcomeMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const { mutate: submitWelcome, isPending } = apiClient.welcome.useMutation({
+  const {
+    mutate: submitWelcome,
+    isPending,
+    contractEndpoint,
+  } = apiClient.welcome.useMutation({
     onSuccess: (response) => {
       if (response.status === 200) {
         setWelcomeMessage(response.body.message);
+        setErrorMessage(null);
       }
     },
-    onError: (error) => {
-      console.error('Error calling welcome API:', error);
+    onError: (error, variables, context) => {
+      if (isFetchError(error)) {
+        setErrorMessage(
+          'We could not reach the server. Please check your internet connection.'
+        );
+        return;
+      }
+
+      if (isUnknownErrorResponse(error, contractEndpoint)) {
+        setErrorMessage('An unexpected error occurred. Please try again.');
+        return;
+      }
+
+      // Handle known error responses based on status codes
+      if (error.status === 400) {
+        setErrorMessage('Invalid request. Please check your input.');
+      } else if (error.status === 500) {
+        setErrorMessage('Server error. Please try again later.');
+      } else {
+        // This ensures all error cases are handled
+        exhaustiveGuard(error);
+      }
     },
   });
 
@@ -38,6 +69,13 @@ export default function Home() {
             <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">
               {welcomeMessage}
             </h2>
+          )}
+          {errorMessage && (
+            <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded-md">
+              <p className="text-red-800 dark:text-red-200 text-sm">
+                {errorMessage}
+              </p>
+            </div>
           )}
           <div className="flex flex-col gap-4">
             <input
