@@ -1,9 +1,10 @@
 import { createNextHandler } from "@ts-rest/serverless/next";
-import { apiContract } from "@/lib/contracts";
+import { apiContract } from "@/lib/api/contracts";
+import { STATUS_CODES } from "@/lib/constants";
 
 export const welcomeHandler = async ({ body }: { body: { name: string } }) => {
   return {
-    status: 200,
+    status: STATUS_CODES.OK,
     body: {
       message: `Welcome ${body.name}`,
     },

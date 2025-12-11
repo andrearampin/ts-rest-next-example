@@ -1,13 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import Button from '@/components/Button';
-import { apiClient } from '@/lib/api-client';
-import {
-  isFetchError,
-  isUnknownErrorResponse,
-  exhaustiveGuard,
-} from '@ts-rest/react-query/v5';
+import Button from '@/ui/components/Button';
+import { apiClient } from '@/lib/api/client';
 
 export default function Home() {
   const [name, setName] = useState('');
@@ -17,36 +12,15 @@ export default function Home() {
   const {
     mutate: submitWelcome,
     isPending,
-    contractEndpoint,
   } = apiClient.welcome.useMutation({
     onSuccess: (response) => {
-      if (response.status === 200) {
-        setWelcomeMessage(response.body.message);
-        setErrorMessage(null);
-      }
+      setErrorMessage(null);
+      setWelcomeMessage(response.body.message);
     },
-    onError: (error, variables, context) => {
-      if (isFetchError(error)) {
-        setErrorMessage(
-          'We could not reach the server. Please check your internet connection.'
-        );
-        return;
-      }
-
-      if (isUnknownErrorResponse(error, contractEndpoint)) {
-        setErrorMessage('An unexpected error occurred. Please try again.');
-        return;
-      }
-
-      // Handle known error responses based on status codes
-      if (error.status === 400) {
-        setErrorMessage('Invalid request. Please check your input.');
-      } else if (error.status === 500) {
-        setErrorMessage('Server error. Please try again later.');
-      } else {
-        // This ensures all error cases are handled
-        exhaustiveGuard(error);
-      }
+    onError: (error) => {
+      console.error(error);
+      setWelcomeMessage(null);
+      setErrorMessage('An unexpected error occurred. Please try again.');
     },
   });
 
