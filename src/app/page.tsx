@@ -6,11 +6,12 @@ import { apiClient } from '@/lib/api-client';
 
 export default function Home() {
   const [name, setName] = useState('');
+  const [welcomeMessage, setWelcomeMessage] = useState<string | null>(null);
 
   const { mutate: submitWelcome, isPending } = apiClient.welcome.useMutation({
     onSuccess: (response) => {
       if (response.status === 200) {
-        console.log(response.body);
+        setWelcomeMessage(response.body.message);
       }
     },
     onError: (error) => {
@@ -33,9 +34,11 @@ export default function Home() {
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
       <main className="flex flex-col items-center gap-8 p-8">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 min-w-[400px]">
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">
-            Welcome to Canva
-          </h2>
+          {welcomeMessage && (
+            <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">
+              {welcomeMessage}
+            </h2>
+          )}
           <div className="flex flex-col gap-4">
             <input
               type="text"

@@ -7,7 +7,7 @@ describe('Welcome API Endpoint', () => {
       const result = await welcomeHandler({ body: { name: 'John' } });
       expect(result.status).toBe(200);
       expect(result.body).toEqual({
-        message: 'John welcome',
+        message: 'Welcome John',
       });
     });
 
@@ -15,7 +15,7 @@ describe('Welcome API Endpoint', () => {
       const result = await welcomeHandler({ body: { name: 'Alice' } });
       expect(result.status).toBe(200);
       expect(result.body).toEqual({
-        message: 'Alice welcome',
+        message: 'Welcome Alice',
       });
     });
 
@@ -23,7 +23,7 @@ describe('Welcome API Endpoint', () => {
       const result = await welcomeHandler({ body: { name: '' } });
       expect(result.status).toBe(200);
       expect(result.body).toEqual({
-        message: ' welcome',
+        message: 'Welcome ',
       });
     });
   });

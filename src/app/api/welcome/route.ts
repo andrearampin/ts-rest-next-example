@@ -5,7 +5,7 @@ export const welcomeHandler = async ({ body }: { body: { name: string } }) => {
   return {
     status: 200,
     body: {
-      message: `${body.name} welcome`,
+      message: `Welcome ${body.name}`,
     },
   };
 };
